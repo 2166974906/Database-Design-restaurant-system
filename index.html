@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>餐饮门店点餐系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🍽️</span>
+                <span class="logo-text">餐饮管理系统</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>工作台</span>
+                </a>
+                <a href="#" class="nav-item" data-page="tables">
+                    <span class="nav-icon">🪑</span>
+                    <span>桌台管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="order">
+                    <span class="nav-icon">📝</span>
+                    <span>点餐下单</span>
+                </a>
+                <a href="#" class="nav-item" data-page="kitchen">
+                    <span class="nav-icon">🍳</span>
+                    <span>后厨管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settlement">
+                    <span class="nav-icon">💰</span>
+                    <span>结算中心</span>
+                </a>
+                <a href="#" class="nav-item" data-page="reports">
+                    <span class="nav-icon">📈</span>
+                    <span>经营报表</span>
+                </a>
+                <a href="#" class="nav-item" data-page="members">
+                    <span class="nav-icon">👥</span>
+                    <span>会员管理</span>
+                </a>
+                <!-- 操作日志菜单（仅店长可见） -->
+                <a href="#" class="nav-item" data-page="logs" id="logsMenuItem" style="display:none;">
+                    <span class="nav-icon">📋</span>
+                    <span>操作日志</span>
+                </a>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">未登录</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+                <button class="logout-btn" id="logoutBtn" style="display: none;">退出</button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 登录页面 -->
+            <div id="loginPage" class="page active">
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <span class="login-icon">🍽️</span>
+                            <h2>餐饮门店点餐系统</h2>
+                            <p>请登录您的账号</p>
+                        </div>
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label>用户名</label>
+                                <input type="text" id="username" placeholder="请输入用户名" required>
+                            </div>
+                            <div class="form-group">
+                                <label>密码</label>
+                                <input type="password" id="password" placeholder="请输入密码" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">登 录</button>
+                        </form>
+                        <div class="demo-accounts">
+                            <p>测试账号：</p>
+                            <div class="demo-buttons">
+                                <span onclick="fillDemo('waiter1','123456')">👨‍🍳 服务员</span>
+                                <span onclick="fillDemo('cashier1','123456')">💰 收银员</span>
+                                <span onclick="fillDemo('chef1','123456')">🍳 后厨</span>
+                                <span onclick="fillDemo('manager1','123456')">👔 店长</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 工作台页面 -->
+            <div id="dashboardPage" class="page">
+                <div class="page-header">
+                    <h1>工作台</h1>
+                    <p>欢迎回来，<span id="welcomeName"></span></p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3 id="todayAmount">¥0</h3>
+                            <p>今日营业额</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3 id="todayOrders">0</h3>
+                            <p>今日订单数</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🪑</div>
+                        <div class="stat-info">
+                            <h3 id="turnoverRate">0</h3>
+                            <p>翻台率</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="memberCount">0</h3>
+                            <p>会员总数</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>畅销菜品 Top 5</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="topDishesList" class="dish-list"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>进行中订单</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="activeOrdersList" class="order-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 桌台管理页面 -->
+            <div id="tablesPage" class="page">
+                <div class="page-header">
+                    <h1>桌台管理</h1>
+                    <button class="btn btn-outline" onclick="refreshTables()">🔄 刷新</button>
+                </div>
+                <div id="tablesGrid" class="tables-grid"></div>
+            </div>
+
+            <!-- 点餐下单页面 -->
+            <div id="orderPage" class="page">
+                <div class="page-header">
+                    <h1>点餐下单</h1>
+                    <div class="header-actions" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                        <select id="tableSelect" class="select" style="width:150px;">
+                            <option value="">选择桌台</option>
+                        </select>
+                        <input type="text" id="memberPhoneInput" class="input" placeholder="会员手机号(选填)" style="width:160px;">
+                        <button class="btn btn-primary" onclick="startOrder()">开台点餐</button>
+                        <button class="btn btn-outline" onclick="openChangeDishModal()" id="changeDishBtn" style="display:none;">🔄 换菜</button>
+                        <button class="btn btn-outline" onclick="openSplitOrderModal()" id="splitOrderBtn" style="display:none;">✂️ 拆单</button>
+                        <button class="btn btn-outline" onclick="openMergeOrderModal()" id="mergeOrderBtn" style="display:none;">🔗 并单</button>
+                    </div>
+                </div>
+
+                <div class="order-layout">
+                    <div class="menu-panel">
+                        <div class="menu-categories">
+                            <button class="category-btn active" data-category="all">全部</button>
+                            <button class="category-btn" data-category="凉菜">凉菜</button>
+                            <button class="category-btn" data-category="热菜">热菜</button>
+                            <button class="category-btn" data-category="主食">主食</button>
+                            <button class="category-btn" data-category="饮品">饮品</button>
+                        </div>
+                        <div id="menuList" class="menu-list"></div>
+                    </div>
+
+                    <div class="cart-panel">
+                        <div class="cart-header">
+                            <h3>当前订单</h3>
+                            <span id="currentTableNo" class="table-badge"></span>
+                        </div>
+                        <div id="cartItems" class="cart-items">
+                            <div class="empty-cart">请先选择桌台并点餐</div>
+                        </div>
+                        <div class="cart-footer">
+                            <div class="cart-total">
+                                <span>原价：</span>
+                                <span id="cartTotal">¥0</span>
+                            </div>
+                            <div class="cart-total">
+                                <span>实付：</span>
+                                <span id="cartActual" class="actual-price">¥0</span>
+                            </div>
+                            <button class="btn btn-success btn-block" onclick="addMoreDishes()" id="addMoreBtn" style="display:none;">➕ 加菜</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 后厨管理页面 -->
+            <div id="kitchenPage" class="page">
+                <div class="page-header">
+                    <h1>后厨管理</h1>
+                    <button class="btn btn-outline" onclick="refreshKitchen()">🔄 刷新</button>
+                </div>
+                <div id="kitchenOrders" class="kitchen-orders"></div>
+            </div>
+
+            <!-- 结算中心页面 -->
+            <div id="settlementPage" class="page">
+                <div class="page-header">
+                    <h1>结算中心</h1>
+                </div>
+                <div class="settlement-layout">
+                    <div class="settlement-left">
+                        <h3>进行中订单</h3>
+                        <div id="unsettledOrders" class="order-list"></div>
+                    </div>
+                    <div class="settlement-right">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>结算信息</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="settlement-info">
+                                    <p>订单号：<span id="settleOrderNo">-</span></p>
+                                    <p>桌台：<span id="settleTableNo">-</span></p>
+                                    <p>原价：<span id="settleTotal">¥0</span></p>
+                                    <p>实付：<span id="settleActual" class="actual-price">¥0</span></p>
+                                </div>
+                                <div class="form-group">
+                                    <label>支付方式</label>
+                                    <select id="paymentMethod" class="select">
+                                        <option value="现金">现金</option>
+                                        <option value="微信">微信</option>
+                                        <option value="支付宝">支付宝</option>
+                                        <option value="会员卡">会员卡</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-success btn-block" onclick="confirmSettlement()" id="settleBtn" disabled>确认结算</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 经营报表页面 -->
+            <div id="reportsPage" class="page">
+                <div class="page-header">
+                    <h1>经营报表</h1>
+                    <div class="report-tabs">
+                        <button class="report-tab active" data-report="daily">日报</button>
+                        <button class="report-tab" data-report="monthly">月报</button>
+                        <button class="report-tab" data-report="yearly">年报</button>
+                    </div>
+                </div>
+                <div id="dailyReport" class="report-content active">
+                    <div class="report-stats">
+                        <div class="report-card">
+                            <h3 id="dailyTotal">¥0</h3>
+                            <p>今日营业额</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="dailyCount">0</h3>
+                            <p>今日订单数</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="dailyAvg">¥0</h3>
+                            <p>平均客单价</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>畅销菜品排行</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="dailyTopDishes" class="dish-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="monthlyReport" class="report-content">
+                    <div class="report-filters">
+                        <input type="number" id="monthYear" class="input" placeholder="年份" value="2026">
+                        <input type="number" id="monthMonth" class="input" placeholder="月份" value="1">
+                        <button class="btn btn-primary" onclick="loadMonthlyReport()">查询</button>
+                    </div>
+                    <div class="report-stats">
+                        <div class="report-card">
+                            <h3 id="monthlyTotal">¥0</h3>
+                            <p>月营业额</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="monthlyCount">0</h3>
+                            <p>月订单数</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="monthlyAvg">¥0</h3>
+                            <p>平均客单价</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="yearlyReport" class="report-content">
+                    <div class="report-filters">
+                        <input type="number" id="yearYear" class="input" placeholder="年份" value="2026">
+                        <button class="btn btn-primary" onclick="loadYearlyReport()">查询</button>
+                    </div>
+                    <div class="report-stats">
+                        <div class="report-card">
+                            <h3 id="yearlyTotal">¥0</h3>
+                            <p>年营业额</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="yearlyCount">0</h3>
+                            <p>年订单数</p>
+                        </div>
+                        <div class="report-card">
+                            <h3 id="yearlyAvg">¥0</h3>
+                            <p>平均客单价</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>月度明细</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="monthlyChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 会员管理页面 -->
+            <div id="membersPage" class="page">
+                <div class="page-header">
+                    <h1>会员管理</h1>
+                </div>
+                <div class="member-search">
+                    <input type="text" id="searchPhone" class="input" placeholder="输入手机号查询会员">
+                    <button class="btn btn-primary" onclick="searchMember()">查询</button>
+                </div>
+                <div id="memberInfo" class="member-info-card" style="display:none;"></div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>注册新会员</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <input type="text" id="regPhone" class="input" placeholder="手机号">
+                            <input type="text" id="regName" class="input" placeholder="姓名">
+                            <button class="btn btn-success" onclick="registerMember()">注册会员</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作日志页面 -->
+            <div id="logsPage" class="page">
+                <div class="page-header">
+                    <h1>操作日志</h1>
+                    <div style="display:flex;gap:10px;">
+                        <input type="number" id="logOrderId" class="input" placeholder="输入订单ID" style="width:200px;">
+                        <button class="btn btn-primary" onclick="loadOrderLogs()">查询日志</button>
+                    </div>
+                </div>
+                <div id="logsContainer" class="card">
+                    <div class="card-body">
+                        <div id="logsList" style="color:#999;text-align:center;padding:40px;">请输入订单ID查询操作日志</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========== 模态框 ========== -->
+
+    <!-- 加菜模态框 -->
+    <div id="addDishModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ 加菜</h3>
+                <span class="close" onclick="closeModal('addDishModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="addDishMenu" class="menu-list-small"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 换菜模态框 -->
+    <div id="changeDishModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔄 换菜</h3>
+                <span class="close" onclick="closeModal('changeDishModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>选择要换掉的菜品</label>
+                    <select id="changeOldDetail" class="select"></select>
+                </div>
+                <div class="form-group">
+                    <label>选择新菜品</label>
+                    <select id="changeNewDish" class="select"></select>
+                </div>
+                <div class="form-group">
+                    <label>数量</label>
+                    <input type="number" id="changeQuantity" class="input" value="1" min="1">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="confirmChangeDish()">确认换菜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 拆单模态框 -->
+    <div id="splitOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✂️ 拆单（AA制）</h3>
+                <span class="close" onclick="closeModal('splitOrderModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>拆分方式</label>
+                    <select id="splitMethod" class="select" onchange="toggleSplitMethod()">
+                        <option value="by_item">按菜品分配</option>
+                        <option value="by_amount">按金额分摊</option>
+                    </select>
+                </div>
+                <div id="splitByItem">
+                    <div class="form-group">
+                        <label>每人分配的菜品（用逗号分隔明细ID）</label>
+                        <input type="text" id="splitItemsInput" class="input" placeholder="例如：1,2 | 3,4 | 5">
+                    </div>
+                </div>
+                <div id="splitByAmount" style="display:none;">
+                    <div class="form-group">
+                        <label>每人分摊金额（用逗号分隔）</label>
+                        <input type="text" id="splitAmountsInput" class="input" placeholder="例如：50, 60, 45">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="confirmSplitOrder()">确认拆单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 并单模态框 -->
+    <div id="mergeOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔗 并单（拼桌）</h3>
+                <span class="close" onclick="closeModal('mergeOrderModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>要合并的订单ID（用逗号分隔）</label>
+                    <input type="text" id="mergeOrderIds" class="input" placeholder="例如：1, 2, 3">
+                </div>
+                <div class="form-group">
+                    <label>目标桌台</label>
+                    <select id="mergeTargetTable" class="select"></select>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="confirmMergeOrder()">确认并单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
